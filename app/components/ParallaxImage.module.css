@@ -1,0 +1,27 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  perspective: 1000px;
+  transition: background 0.5s ease;
+}
+
+.image {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.4s ease;
+  transform-style: preserve-3d;
+}
+
+/* Glowing effect on hover */
+.wrapper:hover {
+  background: radial-gradient(circle at center, rgba(255, 0, 200, 0.4), transparent 70%);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.wrapper:hover .image {
+  box-shadow: 0 0 40px rgba(255, 0, 150, 0.6), 0 0 80px rgba(255, 0, 200, 0.3);
+}
