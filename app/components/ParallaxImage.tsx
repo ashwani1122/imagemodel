@@ -1,7 +1,9 @@
 'use client';
 import React, { useRef } from 'react';
-import styles from './ParallaxImage.module.css';
+// import styles from './ParallaxImage.module.css';
+import styles from './ParallaxImage.module.css'; // ✅ Correct CSS Modules import
 
+import "./ParallaxImage.module.css"
 type Props = {
   src: string;
 };
@@ -26,7 +28,7 @@ const ParallaxImage = ({ src }: Props) => {
 
   const resetTransform = () => {
   if (imageRef.current) {
-    imageRef.current.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    imageRef.current.style.transform = `rotateX(10deg) rotateY(10deg)`;
   }
 };
 

@@ -1,13 +1,35 @@
 'use client';
-import {  useState } from 'react';
+import { useState } from 'react';
 import ImageCropper from './components/ImageCropper';
 import ParallaxImage from './components/ParallaxImage';
 import html2canvas from 'html2canvas';
-
 export default function HomePage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [background, setBackground] = useState('from-indigo-500 via-purple-500 to-pink-500');
+
+  const [prompt, setPrompt] = useState('');
+  const [loadingPrompt, setLoadingPrompt] = useState(false);
+
+  const handlePromptGenerate = async () => {
+    try {
+      setLoadingPrompt(true);
+      const res = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await res.json();
+      setUploadedImage(data.imageUrl);
+      setCroppedImage(null);
+    } catch (err) {
+      alert("Image generation failed.");
+    } finally {
+      setLoadingPrompt(false);
+    }
+  };
 
   const backgroundOptions = [
     { name: 'Purple Glow', value: 'from-indigo-500 via-purple-500 to-pink-500' },
@@ -42,13 +64,30 @@ export default function HomePage() {
   };
 
   return (
-    <main
-      className={`min-h-screen overflow-y-auto flex flex-col items-center justify-start p-6 bg-gradient-to-br ${background}`}
-    >
+    <main className={`min-h-screen overflow-y-auto flex flex-col items-center justify-start p-6 bg-gradient-to-br ${background}`}>
       <h1 className="text-3xl font-bold text-white mb-6 text-center">
         3D-Like Photo Editor
       </h1>
 
+      {/* ✅ AI Prompt Input */}
+      <div className="mb-6 w-full flex flex-col items-center">
+        <input
+          type="text"
+          placeholder="Describe a photo (e.g. A robot in space)"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          className="p-2 rounded w-full max-w-md text-black mb-2"
+        />
+        <button
+          onClick={handlePromptGenerate}
+          disabled={!prompt || loadingPrompt}
+          className="px-4 py-2 bg-white text-black rounded shadow font-semibold hover:bg-gray-200"
+        >
+          {loadingPrompt ? "Generating..." : "Generate with AI"}
+        </button>
+      </div>
+
+      {/* ✅ File Upload Input */}
       <input
         type="file"
         accept="image/*"
@@ -56,19 +95,19 @@ export default function HomePage() {
         className="mb-4 text-white"
       />
 
-      {/* Image Cropper */}
+      {/* ✅ Image Cropper */}
       {uploadedImage && !croppedImage && (
         <ImageCropper imageSrc={uploadedImage} onCropComplete={handleCropComplete} />
       )}
 
-      {/* Parallax Image */}
+      {/* ✅ Parallax Image */}
       {croppedImage && (
         <div className="mt-6">
           <ParallaxImage src={croppedImage} />
         </div>
       )}
 
-      {/* Background Filter Picker */}
+      {/* ✅ Background Filter Picker */}
       <div className="mt-8">
         <label className="text-white font-medium mr-2">Choose Background:</label>
         <select
@@ -82,10 +121,9 @@ export default function HomePage() {
             </option>
           ))}
         </select>
-
       </div>
-     
-      {/* Download Button */}
+
+      {/* ✅ Download Button */}
       {croppedImage && (
         <button
           onClick={downloadImage}
@@ -94,7 +132,7 @@ export default function HomePage() {
           Download Image
         </button>
       )}
-      
+
       <p className="mt-10 text-white text-sm opacity-60 text-center">
         Made with ❤️ in Next.js – Customize & Save your stunning 3D DP or wallpaper
       </p>
